@@ -3,6 +3,9 @@
 # Citation
 If you use this work/data, please cite our paper:
 
+## How to setup new optimizations
+If you'd like to setup a new optimization, please see our tutorial [here]().
+
 ## Data Availability
 Due to copyright limitations, we cannot distribute the models for the following files:
 ```
