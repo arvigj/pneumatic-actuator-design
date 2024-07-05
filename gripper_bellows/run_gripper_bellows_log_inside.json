@@ -1,0 +1,177 @@
+{
+    "variable_to_simulation": [
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                2
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 0
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 50,
+                    "num_vertices": 1485,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        }
+    ],
+    "parameters": [
+        {
+            "number": 300
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "trace"
+        },
+        "save_frequency": 1
+    },
+    "solver": {
+        "contact": {
+            "enabled": false
+        },
+        "nonlinear": {
+            "solver": "L-BFGS",
+            "max_iterations": 100,
+            "grad_norm": 1e-6,
+            "line_search": {
+                "method": "Backtracking"
+            }
+        },
+        "advanced": {
+            "enable_slim": true,
+            "smooth_line_search": false
+        }
+    },
+    "functionals": [
+        {
+            "type": "transient_integral",
+            "weight": 1e6,
+            "print_energy": "target_match_cylinder",
+            "integral_type": "steps",
+            "steps": [
+                52,
+                53,
+                54,
+                55
+            ],
+            "state": 0,
+            "static_objective": {
+                "type": "mesh-target",
+                "state": 0,
+                "surface_selection": [
+                    4
+                ],
+                "mesh_path": "cylinder_smaller_target_v2.obj",
+                "delta": 0.001
+            }
+        },
+        {
+            "type": "transient_integral",
+            "weight": 1e4,
+            "print_energy": "target_match_intermediate_5",
+            "integral_type": "steps",
+            "steps": [
+                5
+            ],
+            "state": 0,
+            "static_objective": {
+                "type": "mesh-target",
+                "state": 0,
+                "surface_selection": [
+                    4
+                ],
+                "mesh_path": "intermediate_target_5.obj",
+                "delta": 0.001
+            }
+        },
+        {
+            "type": "transient_integral",
+            "weight": 2e4,
+            "print_energy": "target_match_intermediate_10",
+            "integral_type": "steps",
+            "steps": [
+                10
+            ],
+            "state": 0,
+            "static_objective": {
+                "type": "mesh-target",
+                "state": 0,
+                "surface_selection": [
+                    4
+                ],
+                "mesh_path": "intermediate_target_10.obj",
+                "delta": 0.001
+            }
+        },
+        {
+            "type": "transient_integral",
+            "weight": 5e4,
+            "print_energy": "target_match_intermediate_30",
+            "integral_type": "steps",
+            "steps": [
+                30
+            ],
+            "state": 0,
+            "static_objective": {
+                "type": "mesh-target",
+                "state": 0,
+                "surface_selection": [
+                    4
+                ],
+                "mesh_path": "intermediate_target_30.obj",
+                "delta": 0.001
+            }
+        },
+        {
+            "type": "collision_barrier",
+            "print_energy": "collision_barrier",
+            "weight": 1,
+            "state": 0,
+            "dhat": 3e-5
+        },
+        {
+            "type": "layer_thickness",
+            "print_energy": "layer_thickness",
+            "weight": 3e6,
+            "state": 0,
+            "dhat": 0.003,
+            "boundary_ids": [
+                2,
+                3
+            ]
+        },
+        {
+            "type": "transient_integral",
+            "weight": -1e4,
+            "print_energy": "quadratic_contact_force_norm",
+            "integral_type": "steps",
+            "steps": [
+                53,
+                54
+            ],
+            "state": 0,
+            "static_objective": {
+                "type": "log_contact_force_norm",
+                "state": 0,
+                "surface_selection": [
+                    50,
+                    4
+                ],
+                "dhat": 0.001
+            }
+        }
+    ],
+    "states": [
+        {
+            "path": "state_gripper_bellows.json"
+        }
+    ]
+}
