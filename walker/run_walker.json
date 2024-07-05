@@ -1,0 +1,148 @@
+{
+    "variable_to_simulation": [
+        {
+            "type": "pressure",
+            "composite_map_type": "time_step_indexing",
+            "surface_selection": [
+                2
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 0
+                },
+                {
+                    "type": "scale",
+                    "value": 1e3
+                },
+                {
+                    "type": "scalar-velocity-parametrization",
+                    "start_val": 0.0,
+                    "dt": 0.02
+                }
+            ]
+        },
+        {
+            "type": "pressure",
+            "composite_map_type": "time_step_indexing",
+            "surface_selection": [
+                3
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 1
+                },
+                {
+                    "type": "scale",
+                    "value": 1e3
+                },
+                {
+                    "type": "scalar-velocity-parametrization",
+                    "start_val": 0.0,
+                    "dt": 0.02
+                }
+            ]
+        }
+    ],
+    "parameters": [
+        {
+            "number": 200
+        },
+        {
+            "number": 200
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "debug"
+        },
+        "save_frequency": 1
+    },
+    "solver": {
+        "contact": {
+            "enabled": false
+        },
+        "nonlinear": {
+            "solver": "L-BFGS-B",
+            "max_iterations": 1000,
+            "iterations_per_strategy": 1,
+            "grad_norm": 0,
+            "line_search": {
+                "use_grad_norm_tol": 0,
+                "method": "Backtracking"
+            },
+            "box_constraints": {
+                "bounds": [
+                    -5,
+                    5
+                ],
+                "max_change": 1
+            },
+            "advanced": {
+                "apply_gradient_fd": "None",
+                "gradient_fd_eps": 1e-3
+            }
+        },
+        "advanced": {
+            "enable_slim": false,
+            "smooth_line_search": false
+        }
+    },
+    "functionals": [
+        {
+            "type": "transient_integral",
+            "weight": 1e2,
+            "print_energy": "target_match_final",
+            "integral_type": "final",
+            "state": 0,
+            "static_objective": {
+                "type": "displacement-target",
+                "state": 0,
+                "target_displacement": [
+                    0.32,
+                    0
+                ],
+                "active_dimension": [
+                    true,
+                    true
+                ],
+                "surface_selection": [
+                    4
+                ]
+            }
+        },
+        {
+            "type": "transient_integral",
+            "weight": 1e2,
+            "print_energy": "target_match_middle",
+            "integral_type": "steps",
+            "steps": [
+                100
+            ],
+            "state": 0,
+            "static_objective": {
+                "type": "displacement-target",
+                "state": 0,
+                "target_displacement": [
+                    0.16,
+                    0
+                ],
+                "active_dimension": [
+                    true,
+                    true
+                ],
+                "surface_selection": [
+                    4
+                ]
+            }
+        }
+    ],
+    "states": [
+        {
+            "path": "state_walker.json"
+        }
+    ]
+}
