@@ -1,0 +1,108 @@
+{
+    "variable_to_simulation": [
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                2
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 0
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 15,
+                    "num_vertices": 1295,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        }
+    ],
+    "parameters": [
+        {
+            "number": 90
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "trace"
+        },
+        "save_frequency": 1
+    },
+    "solver": {
+        "contact": {
+            "enabled": false
+        },
+        "nonlinear": {
+            "solver": "L-BFGS",
+            "max_iterations": 100,
+            "grad_norm": 1e-6,
+            "line_search": {
+                "method": "Backtracking"
+            }
+        },
+        "advanced": {
+            "enable_slim": true,
+            "smooth_line_search": false
+        }
+    },
+    "functionals": [
+        {
+            "type": "transient_integral",
+            "weight": 1e6,
+            "print_energy": "target_match",
+            "integral_type": "steps",
+            "steps": [
+                109
+            ],
+            "state": 0,
+            "static_objective": {
+                "type": "mesh-target",
+                "state": 0,
+                "surface_selection": [
+                    3
+                ],
+                "mesh_path": "finger_target_larger.obj",
+                "delta": 0.001
+            }
+        },
+        {
+            "type": "collision_barrier",
+            "print_energy": "collision_barrier",
+            "weight": 1,
+            "state": 0,
+            "dhat": 5e-5
+        },
+        {
+            "type": "layer_thickness",
+            "print_energy": "layer_thickness",
+            "boundary_ids": [
+                2,
+                3
+            ],
+            "weight": 3e6,
+            "state": 0,
+            "dhat": 0.003
+        },
+        {
+            "type": "boundary_smoothing",
+            "print_energy": "boundary_smoothing",
+            "surface_selection": [
+                2
+            ],
+            "power": 2,
+            "state": 0,
+            "weight": 1e-2,
+            "scale_invariant": true
+        }
+    ],
+    "states": [
+        {
+            "path": "state_finger.json"
+        }
+    ]
+}

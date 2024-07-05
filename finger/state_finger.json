@@ -1,0 +1,97 @@
+{
+    "geometry": [
+        {
+            "mesh": "finger_base_mesh.msh",
+            "volume_selection": 1,
+            "transformation": {
+                "scale": 0.0015
+            },
+            "n_refs": 0,
+            "surface_selection": "surface_selections.txt"
+        }
+    ],
+    "contact": {
+        "enabled": true,
+        "friction_coefficient": 0.0,
+        "dhat": 1e-4
+    },
+    "space": {
+        "discr_order": 2,
+        "advanced": {
+            "quadrature_order": 5,
+            "n_boundary_samples": 5
+        }
+    },
+    "time": {
+        "t0": 0,
+        "tend": 1.1,
+        "dt": 0.01
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        },
+        "contact": {
+            "barrier_stiffness": 1e5,
+            "friction_iterations": 1
+        },
+        "nonlinear": {
+            "max_iterations": 150,
+            "grad_norm": 1e-9,
+            "line_search": {
+                "use_grad_norm_tol": 1e-7
+            }
+        }
+    },
+    "boundary_conditions": {
+        "rhs": [
+            0,
+            0,
+            0
+        ],
+        "dirichlet_boundary": [
+            {
+                "id": 1,
+                "value": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ],
+        "pressure_boundary": [
+            {
+                "id": 2,
+                "value": "-120000 * half_smoothstep(t)"
+            }
+        ]
+    },
+    "materials": [
+        {
+            "id": 1,
+            "type": "MooneyRivlin3ParamSymbolic",
+            "c1": 55000,
+            "c2": 5000,
+            "c3": 1700,
+            "d1": 1000000,
+            "rho": 1000
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "debug"
+        },
+        "paraview": {
+            "vismesh_rel_area": 1,
+            "file_name": "output.vtu",
+            "surface": true,
+            "options": {
+                "body_ids": true
+            },
+            "skip_frame": 5
+        },
+        "advanced": {
+            "save_time_sequence": true
+        }
+    }
+}
