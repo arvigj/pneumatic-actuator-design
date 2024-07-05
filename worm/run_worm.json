@@ -1,0 +1,409 @@
+{
+    "variable_to_simulation": [
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                11
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 0
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 150,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                7
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 1
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 148,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                10
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 2
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 149,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                9
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 3
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 154,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                3
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 4
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 130,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                2
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 5
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 135,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                8
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 6
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 146,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                6
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 7
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 139,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                5
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 8
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 163,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                4
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 9
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 20,
+                    "num_vertices": 136,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        },
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                1
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 10
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 60,
+                    "num_vertices": 1429,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        }
+    ],
+    "parameters": [
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 120
+        },
+        {
+            "number": 360
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "trace"
+        },
+        "save_frequency": 1
+    },
+    "solver": {
+        "contact": {
+            "enabled": false
+        },
+        "nonlinear": {
+            "solver": "lbfgs",
+            "max_iterations": 100,
+            "grad_norm": 1e-6
+        },
+        "advanced": {
+            "enable_slim": true,
+            "smooth_line_search": false
+        }
+    },
+    "functionals": [
+        {
+            "type": "transient_integral",
+            "weight": 5e5,
+            "print_energy": "target_match",
+            "integral_type": "final",
+            "state": 0,
+            "static_objective": {
+                "type": "displacement-target",
+                "state": 0,
+                "target_displacement": [
+                    0.03,
+                    0,
+                    0
+                ],
+                "active_dimension": [
+                    true,
+                    false,
+                    false
+                ],
+                "surface_selection": [
+                    20
+                ]
+            }
+        },
+        {
+            "type": "layer_thickness",
+            "print_energy": "layer_thickness",
+            "weight": 1e7,
+            "state": 0,
+            "dhat": 0.0045,
+            "boundary_ids": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+            ]
+        },
+        {
+            "type": "layer_thickness_log",
+            "print_energy": "layer_thickness_log",
+            "weight": 1e7,
+            "state": 0,
+            "dhat": 0.0001,
+            "dmin": 0.003,
+            "boundary_ids": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+            ]
+        },
+        {
+            "type": "layer_thickness",
+            "print_energy": "layer_thickness_2",
+            "weight": 1e7,
+            "state": 0,
+            "dhat": 0.0045,
+            "boundary_ids": [
+                20,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+            ]
+        },
+        {
+            "type": "layer_thickness",
+            "print_energy": "layer_thickness_3",
+            "weight": 1e7,
+            "state": 0,
+            "dhat": 0.0045,
+            "boundary_ids": [
+                21,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+            ]
+        },
+        {
+            "type": "collision_barrier",
+            "print_energy": "collision_barrier",
+            "weight": 1,
+            "state": 0,
+            "dhat": 5e-5
+        }
+    ],
+    "states": [
+        {
+            "path": "../state_worm.json"
+        }
+    ]
+}

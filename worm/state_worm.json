@@ -1,0 +1,158 @@
+{
+    "geometry": [
+        {
+            "mesh": "worm_long_clean.msh",
+            "volume_selection": 1,
+            "transformation": {
+                "scale": 0.02
+            },
+            "n_refs": 0,
+            "surface_selection": "surface_selections_long.txt"
+        },
+        {
+            "mesh": "cube.msh",
+            "volume_selection": 2,
+            "transformation": {
+                "scale": [
+                    1,
+                    1,
+                    0.01
+                ],
+                "translation": [
+                    0,
+                    0,
+                    -0.024
+                ]
+            },
+            "n_refs": 0,
+            "surface_selection": 30
+        }
+    ],
+    "contact": {
+        "enabled": true,
+        "friction_coefficient": 0.95,
+        "dhat": 5e-5,
+        "use_convergent_formulation": true
+    },
+    "space": {
+        "discr_order": 2,
+        "advanced": {
+            "quadrature_order": 5,
+            "n_boundary_samples": 5
+        }
+    },
+    "time": {
+        "t0": 0,
+        "tend": 3,
+        "dt": 0.01
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        },
+        "contact": {
+            "barrier_stiffness": 1e5,
+            "friction_iterations": 1
+        },
+        "nonlinear": {
+            "max_iterations": 150,
+            "grad_norm": 1e-8
+        }
+    },
+    "boundary_conditions": {
+        "rhs": [
+            0,
+            0,
+            9.8
+        ],
+        "dirichlet_boundary": [
+            {
+                "id": 30,
+                "value": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ],
+        "pressure_boundary": [
+            {
+                "id": 11,
+                "value": "-28000 * (-1 * cos(6.28 * t) + 1)"
+            },
+            {
+                "id": 7,
+                "value": "-29000 * (-1 * cos(6.28 * if(t - 0.10, t - 0.10, 0)) + 1)"
+            },
+            {
+                "id": 10,
+                "value": "-30000 * (-1 * cos(6.28 * if(t - 0.20, t - 0.20, 0)) + 1)"
+            },
+            {
+                "id": 9,
+                "value": "-31000 * (-1 * cos(6.28 * if(t - 0.30, t - 0.30, 0)) + 1)"
+            },
+            {
+                "id": 3,
+                "value": "-32000 * (-1 * cos(6.28 * if(t - 0.40, t - 0.40, 0)) + 1)"
+            },
+            {
+                "id": 2,
+                "value": "-32000 * (-1 * cos(6.28 * if(t - 0.50, t - 0.50, 0)) + 1)"
+            },
+            {
+                "id": 8,
+                "value": "-32000 * (-1 * cos(6.28 * if(t - 0.60, t - 0.60, 0)) + 1)"
+            },
+            {
+                "id": 6,
+                "value": "-32000 * (-1 * cos(6.28 * if(t - 0.70, t - 0.70, 0)) + 1)"
+            },
+            {
+                "id": 5,
+                "value": "-32000 * (-1 * cos(6.28 * if(t - 0.80, t - 0.80, 0)) + 1)"
+            },
+            {
+                "id": 4,
+                "value": "-32000 * (-1 * cos(6.28 * if(t - 0.90, t - 0.90, 0)) + 1)"
+            }
+        ]
+    },
+    "materials": [
+        {
+            "id": 1,
+            "type": "MooneyRivlin3ParamSymbolic",
+            "c1": 50000,
+            "c2": 8000,
+            "c3": 1000,
+            "d1": 1320132,
+            "rho": 1000
+        },
+        {
+            "id": 2,
+            "type": "MooneyRivlin3ParamSymbolic",
+            "c1": 50000,
+            "c2": 8000,
+            "c3": 1000,
+            "d1": 1320132,
+            "rho": 1000
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "debug"
+        },
+        "paraview": {
+            "vismesh_rel_area": 1,
+            "file_name": "output.vtu",
+            "surface": true,
+            "options": {
+                "body_ids": true
+            },
+            "skip_frame": 5
+        },
+        "advanced": {
+            "save_time_sequence": true
+        }
+    }
+}
