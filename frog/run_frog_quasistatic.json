@@ -1,0 +1,161 @@
+{
+    "variable_to_simulation": [
+        {
+            "type": "shape",
+            "composite_map_type": "boundary",
+            "surface_selection": [
+                2
+            ],
+            "state": 0,
+            "composition": [
+                {
+                    "type": "slice",
+                    "parameter_index": 0
+                },
+                {
+                    "type": "bounded-biharmonic-weights",
+                    "num_control_vertices": 50,
+                    "num_vertices": 759,
+                    "state": 0,
+                    "allow_rotations": true
+                }
+            ]
+        }
+    ],
+    "parameters": [
+        {
+            "number": 300
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "trace"
+        },
+        "save_frequency": 1
+    },
+    "solver": {
+        "contact": {
+            "enabled": false
+        },
+        "nonlinear": {
+            "solver": "L-BFGS",
+            "max_iterations": 100,
+            "grad_norm": 1e-6,
+            "line_search": {
+                "method": "Backtracking"
+            },
+            "advanced": {
+                "apply_gradient_fd": "None"
+            }
+        },
+        "advanced": {
+            "enable_slim": true,
+            "smooth_line_search": true
+        }
+    },
+    "functionals": [
+        {
+            "type": "mesh-target",
+            "weight": 1e8,
+            "print_energy": "target_match",
+            "state": 0,
+            "surface_selection": [
+                10
+            ],
+            "mesh_path": "frog_selection_10.obj",
+            "delta": 0.001
+        },
+        {
+            "type": "mesh-target",
+            "weight": 1e8,
+            "print_energy": "target_match",
+            "state": 0,
+            "surface_selection": [
+                11
+            ],
+            "mesh_path": "frog_selection_11.obj",
+            "delta": 0.001
+        },
+        {
+            "type": "mesh-target",
+            "weight": 1e8,
+            "print_energy": "target_match",
+            "state": 0,
+            "surface_selection": [
+                12
+            ],
+            "mesh_path": "frog_selection_12.obj",
+            "delta": 0.001
+        },
+        {
+            "type": "mesh-target",
+            "weight": 5e8,
+            "print_energy": "target_match",
+            "state": 0,
+            "surface_selection": [
+                13
+            ],
+            "mesh_path": "frog_neck_target.obj",
+            "delta": 0.001
+        },
+        {
+            "type": "collision_barrier",
+            "print_energy": "collision_barrier",
+            "weight": 1,
+            "state": 0,
+            "dhat": 5e-5
+        },
+        {
+            "type": "layer_thickness_log",
+            "print_energy": "layer_thickness_neck",
+            "boundary_ids": [
+                2,
+                13
+            ],
+            "weight": 3e6,
+            "state": 0,
+            "dhat": 0.002,
+            "dmin": 0.001
+        },
+        {
+            "type": "layer_thickness_log",
+            "print_energy": "layer_thickness_head",
+            "boundary_ids": [
+                2,
+                12
+            ],
+            "weight": 3e6,
+            "state": 0,
+            "dhat": 0.002,
+            "dmin": 0.001
+        },
+        {
+            "type": "layer_thickness_log",
+            "print_energy": "layer_thickness_rest",
+            "boundary_ids": [
+                2,
+                2147483647
+            ],
+            "weight": 3e6,
+            "state": 0,
+            "dhat": 0.002,
+            "dmin": 0.001
+        },
+        {
+            "type": "boundary_smoothing",
+            "print_energy": "boundary_smoothing",
+            "surface_selection": [
+                2
+            ],
+            "power": 2,
+            "state": 0,
+            "weight": 0.7,
+            "scale_invariant": true
+        }
+    ],
+    "states": [
+        {
+            "path": "state_frog_quasistatic.json"
+        }
+    ]
+}
