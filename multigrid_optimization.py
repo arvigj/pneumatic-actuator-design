@@ -9,7 +9,7 @@ import argparse
 import re
 
 
-optimizations = {
+OPTIMIZATIONS = {
     "finger": {
         "base_path": "finger",
         "state_path": "state_finger.json",
@@ -371,7 +371,7 @@ def get_num_iters(file_iters, idx):
 
 
 def main():
-    opt_example_dict = optimizations[args.opt_example]
+    opt_example_dict = OPTIMIZATIONS[args.opt_example]
     opt_path = args.opt_path
     base_path = opt_example_dict["base_path"]
 
@@ -465,7 +465,7 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("opt_example", help="", type=str,
-                        choices=list(optimizations.keys()))
+                        choices=list(OPTIMIZATIONS.keys()))
     parser.add_argument("opt_path", help="", type=str)
     parser.add_argument("polyfem_build_dir", help="", type=str)
     parser.add_argument("mmg_build_dir", help="", type=str)
@@ -485,7 +485,7 @@ if __name__ == "__main__":
 
     absolute_path = args.absolute_path
 
-    for k, v in optimizations.items():
+    for k, v in OPTIMIZATIONS.items():
         v["base_path"] = os.path.join(absolute_path, v["base_path"])
 
     main()
