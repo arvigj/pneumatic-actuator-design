@@ -19,4 +19,4 @@ The base models for these files can be found at:
 frog: https://www.turbosquid.com/FullPreview/1508446
 finger: https://www.turbosquid.com/FullPreview/1103552
 ```
-If you acquire these licenses, we can release the aforementioned models for the optimization via email: `arvi[dot]gjoka[at]nyu[dot]edu`.
+If you acquire these licenses, we can release the aforementioned models for the optimization via email: `arvi.gjoka@nyu.edu`.
