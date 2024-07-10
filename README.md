@@ -4,7 +4,7 @@
 If you use this work/data, please cite our paper:
 
 ## How to setup new optimizations
-If you'd like to setup a new optimization, please see our tutorial [here]().
+If you'd like to setup a new optimization, please see our tutorial [here](http://www.arvigjoka.com/blog/2024/pneumatic-actuator-optimization/) (draft in progress).
 
 ## Data Availability
 Due to copyright limitations, we cannot distribute the models for the following files:
