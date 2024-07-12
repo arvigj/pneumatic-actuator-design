@@ -1,7 +1,6 @@
-# [Siggraph 2024] Soft Pneumatic Actuator Design using Differentiable Simulation
+# [Siggraph 2024] Soft Pneumatic Actuator Design using Differentiable Simulation (Draft In Progress, will be final by July 28)
 
-# Citation
-If you use this work/data, please cite our paper:
+## How to run the existing simulations
 
 ## How to setup new optimizations
 If you'd like to setup a new optimization, please see our tutorial [here](http://www.arvigjoka.com/blog/2024/pneumatic-actuator-optimization/) (draft in progress).
@@ -20,3 +19,25 @@ frog: https://www.turbosquid.com/FullPreview/1508446
 finger: https://www.turbosquid.com/FullPreview/1103552
 ```
 If you acquire these licenses, we can release the aforementioned models for the optimization via email: `arvi.gjoka@nyu.edu`.
+
+# Citation
+If you use this work/data, please cite our paper:
+```
+@inproceedings{10.1145/3641519.3657467,
+author = {Gjoka, Arvi and Knoop, Espen and B\"{a}cher, Moritz and Zorin, Denis and Panozzo, Daniele},
+title = {Soft Pneumatic Actuator Design using Differentiable Simulation},
+year = {2024},
+isbn = {9798400705250},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3641519.3657467},
+doi = {10.1145/3641519.3657467},
+abstract = {We propose a computational design pipeline for pneumatically-actuated soft robots interacting with their environment through contact. We optimize the shape of the robot with a shape optimization approach, using a physically-accurate high-order finite element model for the forward simulation. Our approach enables fine-grained control over both deformation and contact forces by optimizing the shape of internal cavities, which we exploit to design pneumatically-actuated robots that can assume user-prescribed poses, or apply user-controlled forces. We demonstrate the efficacy of our method on two artistic and two functional examples.},
+booktitle = {Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Papers '24},
+articleno = {106},
+numpages = {11},
+keywords = {Differentiable Simulation, Finite Element Method, Pneumatic Actuator, Shape Optimization, Soft Robotics},
+location = {Denver, CO, USA},
+series = {SIGGRAPH Conference Papers '24}
+}
+```
