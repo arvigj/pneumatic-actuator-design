@@ -1,0 +1,17 @@
+{
+    "model_path": "../../finger/finger_base_mesh.msh",
+    "selection_paths": [
+        "../../finger/finger_fixed_bc.obj",
+        "../../finger/finger_pressure_bc.obj",
+        "../../finger/finger_target_selection.obj"
+    ],
+    "bc_surfaces": [
+        0,
+        1
+    ],
+    "opt_surfaces": [],
+    "target_surfaces": [
+        2
+    ],
+    "vertex_scaling": 1
+}

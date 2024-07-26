@@ -1,0 +1,14 @@
+{
+    "model_path": "../../frog/frog_base_mesh.msh",
+    "selection_paths": [
+        "../../frog/frog_fixed_bc.STL",
+        "../../frog/frog_pressure_bc.STL"
+    ],
+    "bc_surfaces": [
+        0,
+        1
+    ],
+    "opt_surfaces": [],
+    "target_surfaces": [],
+    "vertex_scaling": 1
+}
