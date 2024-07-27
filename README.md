@@ -1,6 +1,28 @@
-# [Siggraph 2024] Soft Pneumatic Actuator Design using Differentiable Simulation (Draft In Progress, will be final by July 28)
+# [Siggraph 2024] Soft Pneumatic Actuator Design using Differentiable Simulation 
 
 ## How to run the existing simulations
+First, build [PolyFEM](https://github.com/polyfem/polyfem) and download (or build) [MMG](https://github.com/MmgTools/mmg), noting down the directories where the binaries are located. Next, navigate to the directory where you want the optimization files to be saved to. You might want to do this in a tmux window as the optimization can take a long time. Then, run the following command:
+
+```
+python /path/to/pneumatic-actuator-design/multigrid_optimization.py --opt_example EXAMPLE_NAME --polyfem_build_dir /path/to/polyfem/ --mmg_build_dir /path/to/mmg/
+```
+
+where `EXAMPLE_NAME` is one of 
+* frog_quasistatic
+* finger
+* gripper_bellows
+* worm
+
+For some of the ablation studies, you can run
+* gripper_bellows_shape_inside (gripper optimization using only target matching, no contact force maximization)
+* frog_base (optimizatation of frog in vertex space)
+* frog_quasistatic_base_weights_adjust (same as above, but starting with 4x the smoothing weights and decreasing over the optimization)
+
+The 2D walker example is a simple optimization, so it can just be run by
+
+```
+/path/to/PolyFEM_bin --json /path/to/pneumatic-actuator-design/walker/run_walker.json --max_threads 8 
+```
 
 ## How to setup new optimizations
 If you'd like to setup a new optimization, please see our tutorial [here](http://www.arvigjoka.com/blog/2024/pneumatic-actuator-optimization/) (draft in progress).

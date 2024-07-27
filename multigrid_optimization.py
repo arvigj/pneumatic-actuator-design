@@ -59,7 +59,7 @@ OPTIMIZATIONS = {
         "opt_mesh_idx": 0,
         "threads": 16
     },
-        "gripper_bellows_log_inside": {
+    "gripper_bellows": {
         "base_path": "gripper_bellows",
         "state_path": "state_gripper_bellows.json",
         "run_path": "run_gripper_bellows_log_inside.json",
@@ -93,7 +93,7 @@ OPTIMIZATIONS = {
         "opt_mesh_idx": 0,
         "threads": 32
     },
-        "gripper_bellows_shape_inside": {
+    "gripper_bellows_shape_inside": {
         "base_path": "gripper_bellows",
         "state_path": "state_gripper_bellows.json",
         "run_path": "run_gripper_bellows_shape_inside.json",
@@ -132,7 +132,7 @@ OPTIMIZATIONS = {
         "opt_mesh_idx": 0,
         "threads": 32
     },
-        "worm_control": {
+    "worm_control": {
         "base_path":  "worm_control",
         "state_path": "state_worm.json",
         "run_path": "run_worm.json",
@@ -464,15 +464,28 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("opt_example", help="", type=str,
-                        choices=list(OPTIMIZATIONS.keys()))
-    parser.add_argument("opt_path", help="", type=str)
-    parser.add_argument("polyfem_build_dir", help="", type=str)
-    parser.add_argument("mmg_build_dir", help="", type=str)
-    parser.add_argument("absolute_path",
+    parser.add_argument("--opt_example", 
                         type=str,
+                        choices=list(OPTIMIZATIONS.keys()),
+                        required=True,
+                        help="")
+    parser.add_argument("--polyfem_build_dir", 
+                        type=str,
+                        help="Path to PolyFEM binary.")
+    parser.add_argument("--mmg_build_dir", 
+                        type=str,
+                        help="Path to MMG 3D binary.")
+    parser.add_argument("--absolute_path",
+                        type=str,
+                        required=False,
+                        default=os.path.dirname(os.path.realpath(__file__)),
                         help="What is the base path of the data directory, should end in 'pneumatic-actuator-design'")
-    parser.add_argument("opt_algorithm",
+    parser.add_argument("--opt_path", 
+                        type=str,
+                        default=os.getcwd(),
+                        required=False,
+                        help="Where do you want the optimization files to be saved to?")
+    parser.add_argument("--opt_algorithm",
                         type=str,
                         help="Which optimization algorithm to run?",
                         choices=["L-BFGS",
@@ -480,7 +493,9 @@ if __name__ == "__main__":
                             "ADAM",
                             "StochasticADAM",
                             "StochasticGradientDescent",
-                            "BFGS"])
+                            "BFGS"],
+                        required=False,
+                        default="L-BFGS")
     args = parser.parse_args()
 
     absolute_path = args.absolute_path

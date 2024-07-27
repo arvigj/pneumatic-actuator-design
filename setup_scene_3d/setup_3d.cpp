@@ -317,7 +317,7 @@ int main(int argc, char **argv)
 
     std::set<int> visited_faces = {};
 
-    std::ofstream file("../../finger/surface_selections.txt");
+    std::ofstream file("surface_selections.txt");
     if (!file.is_open())
         throw "Cannot open file for writing grouped edge list.";
 
