@@ -1,10 +1,12 @@
 # [Siggraph 2024] Soft Pneumatic Actuator Design using Differentiable Simulation 
 
+This repository contains the data and configuration files for our work ["Soft Pneumatic Actuator Design using Differentiable Simulation"](https://cims.nyu.edu/gcl/papers/2024-pneumatic.pdf). For supplementary material, please see [here](https://cims.nyu.edu/gcl/papers/2024-pneumatic-supplemental.pdf). The main implementation for the paper is contributed to [PolyFEM](https://github.com/polyfem/polyfem), while the cascaded optimization is handled by the python script `cascaded_optimization.py`.
+
 ## How to run the existing simulations
 First, build [PolyFEM](https://github.com/polyfem/polyfem) and download (or build) [MMG](https://github.com/MmgTools/mmg), noting down the directories where the binaries are located. Next, navigate to the directory where you want the optimization files to be saved to. You might want to do this in a tmux window as the optimization can take a long time. Then, run the following command:
 
 ```
-python /path/to/pneumatic-actuator-design/multigrid_optimization.py --opt_example EXAMPLE_NAME --polyfem_build_dir /path/to/polyfem/ --mmg_build_dir /path/to/mmg/
+python /path/to/pneumatic-actuator-design/cascaded_optimization.py --opt_example EXAMPLE_NAME --polyfem_build_dir /path/to/polyfem/ --mmg_build_dir /path/to/mmg/
 ```
 
 where `EXAMPLE_NAME` is one of 
