@@ -398,9 +398,9 @@ def main():
     run["output"]["save_frequency"] = 1
     # run["output"]["solve_log_level"] = 1
 
-    state["solver"]["nonlinear"]["solver"] = [{"type": "Newton"}, {"type": "RegularizedNewton"}, {"type": "GradientDescent"}]
+    # state["solver"]["nonlinear"]["solver"] = [{"type": "Newton"}, {"type": "RegularizedNewton"}, {"type": "GradientDescent"}]
     state["solver"]["nonlinear"]["line_search"] = {"method": "RobustArmijo"}
-    state["solver"]["nonlinear"]["Newton"] = {"use_psd_projection": False, "use_psd_projection_in_regularized": False}
+    # state["solver"]["nonlinear"]["Newton"] = {"use_psd_projection": False, "use_psd_projection_in_regularized": False}
     run["solver"]["nonlinear"]["line_search"] = {"method": "Backtracking"}
     run["solver"]["nonlinear"]["solver"] = args.opt_algorithm
     run["solver"]["nonlinear"]["iterations_per_strategy"] = 2
