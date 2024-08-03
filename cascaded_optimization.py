@@ -64,9 +64,9 @@ OPTIMIZATIONS = {
         "state_path": "state_gripper_bellows.json",
         "run_path": "run_gripper_bellows_log_inside.json",
         "num_control_points": {
-            "0": [5, 20, 80, 320, 640, 1280, 1280, 1280, 1280],
+            "0": [5, 20, 80, 320, 640, 1280],
         },
-        "num_iters": [5, 5, 5, 5, 5, 10, 10, 10, 20],
+        "num_iters": [5, 5, 5, 5, 5, 5],
         "aux_files": [
             "cylinder_smaller_target_v2.obj",
             "intermediate_target_5.obj",
@@ -81,9 +81,9 @@ OPTIMIZATIONS = {
         "state_path": "state_gripper_bellows.json",
         "run_path": "run_gripper_bellows_quadratic_inside.json",
         "num_control_points": {
-            "0": [5, 20, 80, 320, 640, 1280, 1280, 1280, 1280],
+            "0": [5, 20, 80, 320, 640, 1280],
         },
-        "num_iters": [5, 5, 5, 5, 5, 10, 10, 10, 20],
+        "num_iters": [5, 5, 5, 5, 5, 5],
         "aux_files": [
             "cylinder_smaller_target_v2.obj",
             "intermediate_target_5.obj",
@@ -98,9 +98,9 @@ OPTIMIZATIONS = {
         "state_path": "state_gripper_bellows.json",
         "run_path": "run_gripper_bellows_shape_inside.json",
         "num_control_points": {
-            "0": [5, 20, 80, 320, 640, 1280, 1280, 1280, 1280],
+            "0": [5, 20, 80, 320, 640, 1280],
         },
-        "num_iters": [5, 5, 5, 5, 5, 10, 10, 10, 20],
+        "num_iters": [5, 5, 5, 5, 5, 5],
         "aux_files": [
             "cylinder_smaller_target_v2.obj",
             "intermediate_target_5.obj",
