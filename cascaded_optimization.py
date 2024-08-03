@@ -15,9 +15,9 @@ OPTIMIZATIONS = {
         "state_path": "state_finger.json",
         "run_path": "run_finger.json",
         "num_control_points": {
-            "0": [4, 10, 20, 40, 80, 160, 320, 640, -1, -1, -1, -1, -1]
+            "0": [4, 10, 20, 40, 80, 160, 320, 640]
         },
-        "num_iters": [5, 5, 5, 5, 5, 5, 10, 10, 20, 20, 20, 20, 20],
+        "num_iters": [5, 5, 5, 5, 5, 5, 10, 10],
         "aux_files": ["finger_tip_target.obj", "finger_target.obj", "finger_target_larger.obj", "finger_target_v2.obj", "finger_target_v2_larger.obj"],
         "opt_mesh_idx": 0,
         "threads": 16
