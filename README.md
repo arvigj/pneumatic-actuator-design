@@ -26,6 +26,25 @@ The 2D walker example is a simple optimization, so it can just be run by
 /path/to/PolyFEM_bin --json /path/to/pneumatic-actuator-design/walker/run_walker.json --max_threads 8 
 ```
 
+## Environment
+
+The PolyFEM library automatically downloads its dependencies with cmake. The default linear solver in simulations is `Eigen::PardisoLDLT`, which requires [MKL](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html). This is not available on MacOS with Apple silicon, in which case `Eigen::AccelerateLDLT` or `Eigen::CholmodSimplicialLDLT` are recommended.
+
+The python script requires [meshio](https://github.com/conda-forge/meshio-feedstock) for doing IO with meshes and the [libigl](https://github.com/libigl/libigl-python-bindings) python bindings.
+
+## Output
+
+The `log` file in each output directory details the convergence of the forward problem (Newton iterations, convergence, timing on all steps) and the inverse problem, including energy and gradient norm. 
+
+The simulation results are exported as [VTK format](https://docs.vtk.org/en/latest/design_documents/VTKFileFormats.html) and can be visualized in [Paraview](https://www.paraview.org). The optimization result files have the format of `opt_state_{i}_iter_{j}`, where `i` is the ID of the simulation (in the case where multiple simulations are included), `j` is the iteration number of the optimization. Once a cascade level is finished, the files are written as `opt_{i}_{j}_{k}` where `i` is the cascade step, `j` is the iteration number within the cascade step and `k` is the number of control points for that cascade level. You can rename all of the output files with the same name and increasing iteration number with the following command in the output directory
+
+```
+python /path/to/pneumatic-actuator-design/copy_output_sequential.py --opt_example EXAMPLE_NAME
+```
+
+This should save the files as `opt_sequential_{i}` where `i` is the iteration number. These can then all be loaded in the same Paraview import operation and they appear as different time steps, so you can examine the optimization by scrubbing the visualization.
+
+
 ## How to setup new optimizations
 If you'd like to setup a new optimization, please see our tutorial [here](http://www.arvigjoka.com/blog/2024/pneumatic-actuator-optimization/) (draft in progress).
 
