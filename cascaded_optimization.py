@@ -7,6 +7,7 @@ import json
 import numpy.linalg as la
 import argparse
 import re
+import platform
 
 
 OPTIMIZATIONS = {
@@ -152,6 +153,18 @@ OPTIMIZATIONS = {
         "num_iters": [3, 5, 5, 5, 5, 10, 10, 10, 10],
         "control_variables": 10,
         "aux_files": [],
+        "opt_mesh_idx": 0,
+        "threads": 16
+    },
+    "cervix_inflation": {
+        "base_path": "cervix_inflation",
+        "state_path": "state_MR_Conradlow.json",
+        "run_path": "run_MR_Conradlow.json",
+        "num_control_points": {
+            "0": [6, 12, 24, 48, 96]
+        },
+        "num_iters": [5, 5, 5, 5, 5],        
+        "aux_files": ["LORIP45V4_ut_cx_1.obj"],
         "opt_mesh_idx": 0,
         "threads": 16
     }
@@ -358,7 +371,10 @@ def run_optimization_or_reload(state_dict, run_dict, opt_path, num_control_pts, 
         if num_threads > 0:
             polyfem_args.extend(["--max_threads", str(num_threads)])
 
+        print("Running command ---")
+        print(" ".join(polyfem_args))
         subprocess.run(polyfem_args, stdout=file_)
+        print("---")
     with open(os.path.join(opt_path, "energy"), "w") as energy_file:
         subprocess.run(["grep", "-e", args.opt_algorithm, "-e", '"Reached iteration limit"', os.path.join(opt_path, "log")], stdout=energy_file)
 
@@ -398,6 +414,13 @@ def main():
     run["output"]["save_frequency"] = 1
     # run["output"]["solve_log_level"] = 1
 
+    if platform.system() == "Darwin":
+        state["solver"]["linear"]["solver"] = "Eigen::AccelerateLDLT"
+    elif platform.system() == "Linux":
+        state["solver"]["linear"]["solver"] = "Eigen::PardisoLDLT"
+    else:
+        print(platform.system())
+        raise AssertionError("Windows is currently not supported.")
     # state["solver"]["nonlinear"]["solver"] = [{"type": "Newton"}, {"type": "RegularizedNewton"}, {"type": "GradientDescent"}]
     state["solver"]["nonlinear"]["line_search"] = {"method": "RobustArmijo"}
     # state["solver"]["nonlinear"]["Newton"] = {"use_psd_projection": False, "use_psd_projection_in_regularized": False}
