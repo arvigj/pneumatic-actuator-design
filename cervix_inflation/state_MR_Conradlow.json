@@ -11,7 +11,7 @@
         }
     ],
     "contact": {
-        "enabled": true,
+        "enabled": false,
         "friction_coefficient": 0.0
     },
     "space": {
