@@ -164,7 +164,7 @@ OPTIMIZATIONS = {
             "0": [6, 12, 24, 48, 96]
         },
         "num_iters": [5, 5, 5, 5, 5],        
-        "aux_files": ["LORIP45V4_ut_cx_1.obj"],
+        "aux_files": ["LORIP45V4_ut_cx_1_scaled.obj"],
         "opt_mesh_idx": 0,
         "threads": 16
     }
