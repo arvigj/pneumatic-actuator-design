@@ -47,7 +47,7 @@
         },
         "advanced": {
             "enable_slim": true,
-            "smooth_line_search": false
+            "smooth_line_search": true
         }
     },
     "functionals": [
