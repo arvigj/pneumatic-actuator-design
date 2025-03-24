@@ -14,6 +14,7 @@ where `EXAMPLE_NAME` is one of
 * finger
 * gripper_bellows
 * worm
+* cervix_inflation
 
 For some of the ablation studies, you can run
 * gripper_bellows_shape_inside (gripper optimization using only target matching, no contact force maximization)
