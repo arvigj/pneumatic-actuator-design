@@ -2,7 +2,7 @@
     "geometry": [
         {
             "mesh": "LORIP45V5_ut_cx.msh",
-            "volume_selection": "volume_selections.txt",
+            "volume_selection": 2,
             "transformation": {
                 "scale": 0.001
             },
