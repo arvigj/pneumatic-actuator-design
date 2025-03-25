@@ -304,7 +304,7 @@ def cache_opt_files(base_path, num_control_pts, num_iters, multigrid_level):
     for i in range(0, num_iters+1):
     # for i in range(0, num_iters):
         try:
-            for postfix in [".vtu", "_surf.vtu", ".vtm", ".obj"]:
+            for postfix in [".vtu", "_surf.vtu", ".vtm"]:
                 subprocess.run(["mv", os.path.join(base_path, f"opt_state_0_iter_{i}{postfix}"), os.path.join(
                     base_path, f"opt_{multigrid_level}_{i}_{num_control_pts if (num_control_pts > 0) else 'full'}{postfix}")], check=True)
             for postfix in ["_surf_contact.vtu"]:
