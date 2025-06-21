@@ -9,6 +9,8 @@ import argparse
 import re
 import platform
 
+from cervix_inflation_EX_V2_thick_new import make_selections
+
 
 OPTIMIZATIONS = {
     "finger": {
@@ -163,11 +165,25 @@ OPTIMIZATIONS = {
         "num_control_points": {
             "0": [6, 12, 24, 48, 96]
         },
-        "num_iters": [10, 10, 10, 10, 10],        
+        "num_iters": [10, 10, 10, 10, 10],
         "aux_files": ["LORIP45V4_ut_cx_1_scaled.obj"],
         "opt_mesh_idx": 0,
         "threads": 16
+    },
+    "cervix_inflation_EX_V2_thick_new": {
+        "base_path": "cervix_inflation_EX_V2_thick_new",
+        "state_path": "state_MR_Conradlow.json",
+        "run_path": "run_MR_Conradlow.json",
+        "num_control_points": {
+            "0": [6, 12, 24, 48, 96, 192, 384, 768, 1536]
+        },
+        "num_iters": [5, 5, 5, 10, 10, 10, 10, 10, 10],
+        "aux_files": ["LORIP45V3_UTCX_out_scaled.obj", "LORIP45V2_CX_Thick.stl"],
+        "opt_mesh_idx": 0,
+        "remesh_reload_function": lambda fname: make_selections.make_selections(fname, "LORIP45V2_CX_Thick.stl"),
+        "threads": 16
     }
+
 }
 
 
@@ -213,7 +229,8 @@ def interior_remeshing(v, t, base_path):
 
 
 def reload_control_from_log(log_file_contents, num_variables, state_json):
-    control_vars = np.array(re.findall('(?<=Current pressure boundary )\d+|(?<=\[)(?:-?\d+(?:\.\d+)?(?:,\s*-?\d+(?:\.\d+)?)*)(?=\])', log_file_contents))
+    control_vars = np.array(re.findall(
+        '(?<=Current pressure boundary )\d+|(?<=\[)(?:-?\d+(?:\.\d+)?(?:,\s*-?\d+(?:\.\d+)?)*)(?=\])', log_file_contents))
     control_vars = control_vars.reshape([-1, 2])
     # assert(control_vars.shape[0] % num_variables == 0)
     control_vars = control_vars[-num_variables:, :]
@@ -302,7 +319,6 @@ def log_energy(base_path):
 def cache_opt_files(base_path, num_control_pts, num_iters, multigrid_level):
     # last_iter = 0
     for i in range(0, num_iters+1):
-    # for i in range(0, num_iters):
         try:
             for postfix in [".vtu", "_surf.vtu", ".vtm"]:
                 subprocess.run(["mv", os.path.join(base_path, f"opt_state_0_iter_{i}{postfix}"), os.path.join(
@@ -318,7 +334,18 @@ def cache_opt_files(base_path, num_control_pts, num_iters, multigrid_level):
     return num_iters
 
 
-def run_optimization_or_reload(state_dict, run_dict, opt_path, num_control_pts, num_iters=20, num_threads=32, multigrid_level=0, weights_adjust=None, control_variables=None):
+def run_optimization_or_reload(
+    state_dict,
+    run_dict,
+    opt_path,
+    num_control_pts,
+    num_iters=20,
+    num_threads=32,
+    multigrid_level=0,
+    weights_adjust=None,
+    control_variables=None,
+    new_opt_vertex_count=None
+):
     found_existing = True
     for i in range(0, num_iters+1):
         if not os.path.isfile(f"opt_{multigrid_level}_{i}_{list(num_control_pts.values())[0] if (list(num_control_pts.values())[0] > 0) else 'full'}.vtu"):
@@ -334,7 +361,8 @@ def run_optimization_or_reload(state_dict, run_dict, opt_path, num_control_pts, 
     with open(os.path.join(opt_path, "state.json"), "w") as file_:
         if control_variables is not None:
             with open(os.path.join(opt_path, "log"), "r") as log_file_:
-                state_dict = reload_control_from_log(log_file_.read(), control_variables, state_dict)
+                state_dict = reload_control_from_log(
+                    log_file_.read(), control_variables, state_dict)
         json.dump(state_dict, file_, indent=2)
     with open(os.path.join(opt_path, "run.json"), "w") as file_:
         tmp_run = run_dict.copy()
@@ -343,7 +371,8 @@ def run_optimization_or_reload(state_dict, run_dict, opt_path, num_control_pts, 
             if v == -1:
                 if (len(tmp_run["variable_to_simulation"][int(k)]["composition"]) > 1):
                     # Remove parametrization here and optimize on vertices
-                    tmp_run["variable_to_simulation"][int(k)]["composition"].pop()
+                    tmp_run["variable_to_simulation"][int(
+                        k)]["composition"].pop()
                     tmp_run["parameters"][int(k)]["number"] = {
                         "surface_selection": tmp_run["variable_to_simulation"][int(k)]["surface_selection"],
                         "state": tmp_run["variable_to_simulation"][int(k)]["state"],
@@ -352,6 +381,9 @@ def run_optimization_or_reload(state_dict, run_dict, opt_path, num_control_pts, 
             else:
                 tmp_run["variable_to_simulation"][int(
                     k)]["composition"][1]["num_control_vertices"] = v
+                if new_opt_vertex_count is not None:
+                    tmp_run["variable_to_simulation"][int(
+                        k)]["composition"][1]["num_vertices"] = new_opt_vertex_count
                 tmp_run["parameters"][int(k)]["number"] = v * 6
         tmp_run["solver"]["nonlinear"]["max_iterations"] = num_iters
 
@@ -376,7 +408,8 @@ def run_optimization_or_reload(state_dict, run_dict, opt_path, num_control_pts, 
         subprocess.run(polyfem_args, stdout=file_)
         print("---")
     with open(os.path.join(opt_path, "energy"), "w") as energy_file:
-        subprocess.run(["grep", "-e", args.opt_algorithm, "-e", '"Reached iteration limit"', os.path.join(opt_path, "log")], stdout=energy_file)
+        subprocess.run(["grep", "-e", args.opt_algorithm, "-e", '"Reached iteration limit"',
+                       os.path.join(opt_path, "log")], stdout=energy_file)
 
     # log_energy(opt_path)
     return cache_opt_files(opt_path, list(num_control_pts.values())[0], num_iters, multigrid_level)
@@ -384,6 +417,26 @@ def run_optimization_or_reload(state_dict, run_dict, opt_path, num_control_pts, 
 
 def get_num_iters(file_iters, idx):
     return file_iters[idx]
+
+
+def do_tetwild_remesh(remesh_reload_function, ftetwild_build_dir, base_path):
+    mesh_fname = os.path.join(base_path, "multigrid.msh")
+    surf_mesh_fname = mesh_fname[:-4] + ".stl"
+    mm = meshio.read(mesh_fname)
+    v = mm.points
+    t = mm.cells_dict["tetra"]
+    f = igl.boundary_facets(t)
+    meshio.write_points_cells(surf_mesh_fname, v, {"triangle": f})
+    if ftetwild_build_dir is None or ftetwild_build_dir == "":
+        raise AssertionError(
+            "Must supply a valid fTetWild build directory for remeshing!")
+    subprocess.run([
+        os.path.join(ftetwild_build_dir, "FloatTetwild_bin"),
+        "-i", surf_mesh_fname,
+        "-o", mesh_fname
+    ], stdout=subprocess.DEVNULL)
+    new_opt_vertex_count = remesh_reload_function(mesh_fname)
+    return new_opt_vertex_count
 
 
 def main():
@@ -427,8 +480,10 @@ def main():
     run["solver"]["nonlinear"]["line_search"] = {"method": "Backtracking"}
     run["solver"]["nonlinear"]["solver"] = args.opt_algorithm
     run["solver"]["nonlinear"]["iterations_per_strategy"] = 2
-    run["solver"]["nonlinear"]["StochasticADAM"] = {"erase_component_probability": 0.7}
-    run["solver"]["nonlinear"]["StochasticGradientDescent"] = {"erase_component_probability": 0.7}
+    run["solver"]["nonlinear"]["StochasticADAM"] = {
+        "erase_component_probability": 0.7}
+    run["solver"]["nonlinear"]["StochasticGradientDescent"] = {
+        "erase_component_probability": 0.7}
 
     # subprocess.run(["rm", os.path.join(opt_path, "log"), os.path.join(opt_path, "total_energy")],
     #                stderr=subprocess.DEVNULL)
@@ -460,10 +515,12 @@ def main():
 
     num_iters = get_num_iters(opt_example_dict["num_iters"], 0)
     num_threads = opt_example_dict["threads"]
-    weights_adjust = {k: v[0] for k, v in opt_example_dict["weights_adjust"].items()} if "weights_adjust" in opt_example_dict else None
+    weights_adjust = {k: v[0] for k, v in opt_example_dict["weights_adjust"].items(
+    )} if "weights_adjust" in opt_example_dict else None
     control_variables = opt_example_dict["control_variables"] if "control_variables" in opt_example_dict else None
 
-    max_iters = run_optimization_or_reload(state, run, opt_path, i, num_iters, num_threads, 0, weights_adjust, None)
+    max_iters = run_optimization_or_reload(
+        state, run, opt_path, i, num_iters, num_threads, 0, weights_adjust, None, None)
 
     # If mesh is inferred from vtu, delete applied transformations
     for idx in range(len(state["geometry"])):
@@ -473,37 +530,61 @@ def main():
                 state["geometry"][idx]["surface_selection"] = "multigrid_selection.txt"
 
     for idx in range(1, len(num_control_pts["0"])):
+        last_num_control_pts = list(num_control_pts.values())[0][idx-1]
+        volume_mesh_fname = f"opt_{idx-1}_{max_iters}_{last_num_control_pts if (last_num_control_pts > 0) else 'full'}.vtu"
+        surface_mesh_fname = f"opt_{idx-1}_{max_iters}_{last_num_control_pts if (last_num_control_pts > 0) else 'full'}_surf.vtu"
+
         i = {k: v[idx] for k, v in num_control_pts.items()}
         num_iters = get_num_iters(opt_example_dict["num_iters"], idx)
-        weights_adjust = {k: v[idx] for k, v in opt_example_dict["weights_adjust"].items()} if "weights_adjust" in opt_example_dict else None
-        last_num_control_pts = list(num_control_pts.values())[0][idx-1]
-        load_from_vtu(opt_path, os.path.join(
-            opt_path, f"opt_{idx-1}_{max_iters}_{last_num_control_pts if (last_num_control_pts > 0) else 'full'}.vtu"),
-            os.path.join(
-            opt_path, f"opt_{idx-1}_{max_iters}_{last_num_control_pts if (last_num_control_pts > 0) else 'full'}_surf.vtu"),
-            state["geometry"][opt_example_dict["opt_mesh_idx"]]["volume_selection"])
-        max_iters = run_optimization_or_reload(state, run, opt_path, i, num_iters, num_threads, idx, weights_adjust, control_variables)
+        weights_adjust = {k: v[idx] for k, v in opt_example_dict["weights_adjust"].items(
+        )} if "weights_adjust" in opt_example_dict else None
+        load_from_vtu(opt_path,
+                      os.path.join(opt_path, volume_mesh_fname),
+                      os.path.join(opt_path, surface_mesh_fname),
+                      state["geometry"][opt_example_dict["opt_mesh_idx"]]["volume_selection"])
+        new_opt_vertex_count = None
+        if "remesh_reload_function" in opt_example_dict:
+            new_opt_vertex_count = do_tetwild_remesh(
+                opt_example_dict["remesh_reload_function"],
+                args.ftetwild_build_dir,
+                opt_path
+            )
+
+        max_iters = run_optimization_or_reload(
+            state,
+            run,
+            opt_path,
+            i,
+            num_iters,
+            num_threads,
+            idx,
+            weights_adjust,
+            control_variables,
+            new_opt_vertex_count)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--opt_example", 
+    parser.add_argument("--opt_example",
                         type=str,
                         choices=list(OPTIMIZATIONS.keys()),
                         required=True,
                         help="")
-    parser.add_argument("--polyfem_build_dir", 
+    parser.add_argument("--polyfem_build_dir",
                         type=str,
                         help="Path to PolyFEM binary.")
-    parser.add_argument("--mmg_build_dir", 
+    parser.add_argument("--mmg_build_dir",
                         type=str,
                         help="Path to MMG 3D binary.")
+    parser.add_argument("--ftetwild_build_dir",
+                        type=str,
+                        help="Path to fTetWild binary.")
     parser.add_argument("--absolute_path",
                         type=str,
                         required=False,
                         default=os.path.dirname(os.path.realpath(__file__)),
                         help="What is the base path of the data directory, should end in 'pneumatic-actuator-design'")
-    parser.add_argument("--opt_path", 
+    parser.add_argument("--opt_path",
                         type=str,
                         default=os.getcwd(),
                         required=False,
@@ -512,11 +593,11 @@ if __name__ == "__main__":
                         type=str,
                         help="Which optimization algorithm to run?",
                         choices=["L-BFGS",
-                            "GradientDescent",
-                            "ADAM",
-                            "StochasticADAM",
-                            "StochasticGradientDescent",
-                            "BFGS"],
+                                 "GradientDescent",
+                                 "ADAM",
+                                 "StochasticADAM",
+                                 "StochasticGradientDescent",
+                                 "BFGS"],
                         required=False,
                         default="L-BFGS")
     args = parser.parse_args()
@@ -527,6 +608,3 @@ if __name__ == "__main__":
         v["base_path"] = os.path.join(absolute_path, v["base_path"])
 
     main()
-
-
-
