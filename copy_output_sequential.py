@@ -17,10 +17,12 @@ def main(example_dict, path):
             i = "full"
         for j in range(example_dict["num_iters"][idx]):
             try:
-                for suffix in [".vtu", "_surf.vtu", ".obj"]:
-                    subprocess.run(["cp", os.path.join(path, f"opt_{idx}_{j}_{i}{suffix}"), os.path.join(path, f"opt_sequential_{s}{suffix}")], check=True)
+                for suffix in [".vtu", "_surf.vtu"]:
+                    subprocess.run(["cp", os.path.join(path, f"opt_{idx}_{j}_{i}{suffix}"), os.path.join(
+                        path, f"opt_sequential_{s}{suffix}")], check=True)
                 for suffix in ["_surf_contact.vtu"]:
-                    subprocess.run(["cp", os.path.join(path, f"opt_{idx}_{j}_{i}{suffix}"), os.path.join(path, f"opt_sequential_{s}{suffix}")], check=False)
+                    subprocess.run(["cp", os.path.join(path, f"opt_{idx}_{j}_{i}{suffix}"), os.path.join(
+                        path, f"opt_sequential_{s}{suffix}")], check=False)
                 s += 1
             except Exception as e:
                 print(e)
@@ -28,10 +30,12 @@ def main(example_dict, path):
     i = 0
     while True:
         try:
-            for suffix in [".vtu", "_surf.vtu", ".obj"]:
-                subprocess.run(["cp", os.path.join(path, f"opt_state_0_iter_{i}{suffix}"), os.path.join(path, f"opt_sequential_{s}{suffix}")], check=True)
+            for suffix in [".vtu", "_surf.vtu"]:
+                subprocess.run(["cp", os.path.join(path, f"opt_state_0_iter_{i}{suffix}"), os.path.join(
+                    path, f"opt_sequential_{s}{suffix}")], check=True)
             for suffix in ["_surf_contact.vtu"]:
-                subprocess.run(["cp", os.path.join(path, f"opt_state_0_iter_{i}{suffix}"), os.path.join(path, f"opt_sequential_{s}{suffix}")], check=False)
+                subprocess.run(["cp", os.path.join(path, f"opt_state_0_iter_{i}{suffix}"), os.path.join(
+                    path, f"opt_sequential_{s}{suffix}")], check=False)
             i += 1
             s += 1
         except Exception as e:
@@ -46,6 +50,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(cascaded_optimization.OPTIMIZATIONS[args.opt_example], args.opt_path)
-
-
-
