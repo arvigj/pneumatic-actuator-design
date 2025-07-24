@@ -525,7 +525,8 @@ def main():
     # If mesh is inferred from vtu, delete applied transformations
     for idx in range(len(state["geometry"])):
         if (idx == opt_example_dict["opt_mesh_idx"]):
-            del state["geometry"][idx]["transformation"]
+            if "transformation" in state["geometry"][idx]:
+                del state["geometry"][idx]["transformation"]
             if type(state["geometry"][idx]["surface_selection"]) == list:
                 state["geometry"][idx]["surface_selection"] = "multigrid_selection.txt"
 
