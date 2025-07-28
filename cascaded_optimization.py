@@ -3,6 +3,7 @@ import igl
 import meshio
 import subprocess
 import os
+import pathlib
 import json
 import numpy.linalg as la
 import argparse
@@ -12,19 +13,8 @@ import platform
 import cervix_inflation_EX_V2_thick_new.make_selections as cervix_inflation_functions
 
 
-OPTIMIZATION_NAMES = [
-    "finger",
-    "frog_quasistatic",
-    "frog_quasistatic_base",
-    "frog_quasistatic_base_weights_adjust",
-    "gripper_bellows",
-    "gripper_bellows_quadratic_inside",
-    "gripper_bellows_shape_inside",
-    "worm",
-    "worm_control",
-    "cervix_inflation",
-    "cervix_inflation_EX_V2_thick_new"
-]
+OPTIMIZATION_NAMES = [pathlib.Path(
+    example).stem for example in os.listdir("configs")]
 
 REMESH_RELOAD_FUNCTIONS = {
     "cervix_inflation_EX_V2_thick_new": lambda fname: cervix_inflation_functions.make_selections(fname, "LORIP45V2_CX_Thick.stl")
@@ -74,7 +64,7 @@ def interior_remeshing(v, t, base_path):
 
 def reload_control_from_log(log_file_contents, num_variables, state_json):
     control_vars = np.array(re.findall(
-        '(?<=Current pressure boundary )\d+|(?<=\[)(?:-?\d+(?:\.\d+)?(?:,\s*-?\d+(?:\.\d+)?)*)(?=\])', log_file_contents))
+        r'(?<=Current pressure boundary )\d+|(?<=\[)(?:-?\d+(?:\.\d+)?(?:,\s*-?\d+(?:\.\d+)?)*)(?=\])', log_file_contents))
     control_vars = control_vars.reshape([-1, 2])
     # assert(control_vars.shape[0] % num_variables == 0)
     control_vars = control_vars[-num_variables:, :]
@@ -410,11 +400,14 @@ def main(opt_example_dict):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     ######################## REQUIRED ########################
-    parser.add_argument("--opt_example",
-                        type=str,
-                        choices=OPTIMIZATION_NAMES,
-                        required=True,
-                        help="")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--opt_example",
+                       type=str,
+                       choices=OPTIMIZATION_NAMES,
+                       help="Optimization example to run. Must be in the configs/ folder.")
+    group.add_argument("--opt_json",
+                       type=str,
+                       help="Path to the optimization configuration json.")
     parser.add_argument("--polyfem_build_dir",
                         type=str,
                         required=True,
@@ -428,11 +421,11 @@ if __name__ == "__main__":
                         type=str,
                         required=False,
                         help="Path to fTetWild binary. Only needed if total body remeshing is done, by specifying a boundary selection reload function in REMESH_RELOAD_FUNCTIONS.")
-    parser.add_argument("--absolute_path",
-                        type=str,
-                        required=False,
-                        default=os.path.dirname(os.path.realpath(__file__)),
-                        help="What is the base path of the data directory, should end in 'pneumatic-actuator-design'. This should really only be changed for special cases (HPC, etc).")
+    # parser.add_argument("--absolute_path",
+    #                     type=str,
+    #                     required=False,
+    #                     default=os.path.dirname(os.path.realpath(__file__)),
+    #                     help="What is the base path of the data directory, should end in 'pneumatic-actuator-design'. This should really only be changed for special cases (HPC, etc).")
     parser.add_argument("--opt_path",
                         type=str,
                         default=os.getcwd(),
@@ -451,11 +444,13 @@ if __name__ == "__main__":
                         default="L-BFGS")
     args = parser.parse_args()
 
-    with open(os.path.join(args.absolute_path, "configs", args.opt_example), "r") as f:
+    absolute_path = os.path.dirname(os.path.realpath(__file__))
+
+    with open(os.path.join(absolute_path, "configs", args.opt_example), "r") as f:
         opt_config = json.load(f)
 
     opt_config["base_path"] = os.path.join(
-        args.absolute_path, opt_config["base_path"])
+        absolute_path, opt_config["base_path"])
 
     if args.opt_example in REMESH_RELOAD_FUNCTIONS:
         opt_config["remesh_reload_function"] = REMESH_RELOAD_FUNCTIONS[args.opt_example]
