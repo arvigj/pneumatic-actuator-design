@@ -14,7 +14,7 @@ import cervix_inflation_EX_V2_thick_new.make_selections as cervix_inflation_func
 
 
 OPTIMIZATION_NAMES = [pathlib.Path(
-    example).stem for example in os.listdir("configs")]
+    example).stem for example in os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "configs"))]
 
 REMESH_RELOAD_FUNCTIONS = {
     "cervix_inflation_EX_V2_thick_new": lambda fname: cervix_inflation_functions.make_selections(fname, "LORIP45V2_CX_Thick.stl")
@@ -302,11 +302,12 @@ def main(opt_example_dict):
 
     if platform.system() == "Darwin":
         state["solver"]["linear"]["solver"] = "Eigen::AccelerateLDLT"
-    elif platform.system() == "Linux":
+    elif platform.system() in ["Linux", "Windows"]:
         state["solver"]["linear"]["solver"] = "Eigen::PardisoLDLT"
     else:
         print(platform.system())
-        raise AssertionError("Windows is currently not supported.")
+        raise AssertionError(
+            f"{platform.system()} is currently not supported.")
     # state["solver"]["nonlinear"]["solver"] = [{"type": "Newton"}, {"type": "RegularizedNewton"}, {"type": "GradientDescent"}]
     state["solver"]["nonlinear"]["line_search"] = {"method": "RobustArmijo"}
     # state["solver"]["nonlinear"]["Newton"] = {"use_psd_projection": False, "use_psd_projection_in_regularized": False}
@@ -444,13 +445,22 @@ if __name__ == "__main__":
                         default="L-BFGS")
     args = parser.parse_args()
 
-    absolute_path = os.path.dirname(os.path.realpath(__file__))
-
-    with open(os.path.join(absolute_path, "configs", args.opt_example), "r") as f:
-        opt_config = json.load(f)
-
-    opt_config["base_path"] = os.path.join(
-        absolute_path, opt_config["base_path"])
+    absolute_path = None
+    opt_config = None
+    if args.opt_example:
+        absolute_path = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(absolute_path, "configs", args.opt_example), "r") as f:
+            opt_config = json.load(f)
+        opt_config["base_path"] = os.path.join(
+            absolute_path, opt_config["base_path"])
+    elif args.opt_json:
+        absolute_path = os.path.dirname(args.opt_json)
+        with open(args.opt_json, "r") as f:
+            opt_config = json.load(f)
+        opt_config["base_path"] = absolute_path
+        print(opt_config)
+    else:
+        raise AssertionError()
 
     if args.opt_example in REMESH_RELOAD_FUNCTIONS:
         opt_config["remesh_reload_function"] = REMESH_RELOAD_FUNCTIONS[args.opt_example]
