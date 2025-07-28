@@ -1,0 +1,35 @@
+{
+    "base_path": "cervix_inflation_EX_V2_thick_new",
+    "state_path": "state_MR_Conradlow.json",
+    "run_path": "run_MR_Conradlow.json",
+    "num_control_points": {
+        "0": [
+            6,
+            12,
+            24,
+            48,
+            96,
+            192,
+            384,
+            768,
+            1536
+        ]
+    },
+    "num_iters": [
+        5,
+        5,
+        5,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+    ],
+    "aux_files": [
+        "LORIP45V3_UTCX_out_scaled.obj",
+        "LORIP45V2_CX_Thick.stl"
+    ],
+    "opt_mesh_idx": 0,
+    "threads": 16
+}

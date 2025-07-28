@@ -9,181 +9,25 @@ import argparse
 import re
 import platform
 
-from cervix_inflation_EX_V2_thick_new import make_selections
+import cervix_inflation_EX_V2_thick_new.make_selections as cervix_inflation_functions
 
 
-OPTIMIZATIONS = {
-    "finger": {
-        "base_path": "finger",
-        "state_path": "state_finger.json",
-        "run_path": "run_finger.json",
-        "num_control_points": {
-            "0": [4, 10, 20, 40, 80, 160, 320, 640]
-        },
-        "num_iters": [5, 5, 5, 5, 5, 5, 10, 10],
-        "aux_files": ["finger_tip_target.obj", "finger_target.obj", "finger_target_larger.obj", "finger_target_v2.obj", "finger_target_v2_larger.obj"],
-        "opt_mesh_idx": 0,
-        "threads": 16
-    },
-    "frog_quasistatic": {
-        "base_path": "frog",
-        "state_path": "state_frog_quasistatic.json",
-        "run_path": "run_frog_quasistatic.json",
-        "num_control_points": {
-            "0": [1, 10, 20, 40, 80, 160, 320, 640, 728, 728, 728, 728]
-        },
-        "num_iters": [5, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10],
-        "aux_files": ["frog_selection_10.obj", "frog_selection_11.obj", "frog_selection_12.obj", "frog_neck_target.obj"],
-        "opt_mesh_idx": 0,
-        "threads": 16
-    },
-    "frog_quasistatic_base": {
-        "base_path": "frog",
-        "state_path": "state_frog_quasistatic_vertices.json",
-        "run_path": "run_frog_quasistatic_vertices.json",
-        "num_control_points": {
-            "0": [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-        },
-        "num_iters": [5, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10],
-        "aux_files": ["frog_selection_10.obj", "frog_selection_11.obj", "frog_selection_12.obj", "frog_neck_target.obj"],
-        "opt_mesh_idx": 0,
-        "threads": 16
-    },
-    "frog_quasistatic_base_weights_adjust": {
-        "base_path": "frog",
-        "state_path": "state_frog_quasistatic_vertices.json",
-        "run_path": "run_frog_quasistatic_vertices.json",
-        "num_control_points": {
-            "0": [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-        },
-        "num_iters": [5, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10],
-        "weights_adjust": {"boundary_smoothing": [2.8, 2.8, 2.8, 2.8, 1.4, 1.4, 1.4, 1.4, 0.7, 0.7, 0.7, 0.7]},
-        "aux_files": ["frog_selection_10.obj", "frog_selection_11.obj", "frog_selection_12.obj", "frog_neck_target.obj"],
-        "opt_mesh_idx": 0,
-        "threads": 16
-    },
-    "gripper_bellows": {
-        "base_path": "gripper_bellows",
-        "state_path": "state_gripper_bellows.json",
-        "run_path": "run_gripper_bellows_log_inside.json",
-        "num_control_points": {
-            "0": [5, 20, 80, 320, 640, 1280, 1280, 1280],
-        },
-        "num_iters": [5, 5, 5, 5, 5, 10, 20, 20],
-        "aux_files": [
-            "cylinder_smaller_target_v2.obj",
-            "intermediate_target_5.obj",
-            "intermediate_target_10.obj",
-            "intermediate_target_30.obj"
-        ],
-        "opt_mesh_idx": 0,
-        "threads": 32
-    },
-    "gripper_bellows_quadratic_inside": {
-        "base_path": "gripper_bellows",
-        "state_path": "state_gripper_bellows.json",
-        "run_path": "run_gripper_bellows_quadratic_inside.json",
-        "num_control_points": {
-            "0": [5, 20, 80, 320, 640, 1280, 1280, 1280],
-        },
-        "num_iters": [5, 5, 5, 5, 5, 10, 20, 20],
-        "aux_files": [
-            "cylinder_smaller_target_v2.obj",
-            "intermediate_target_5.obj",
-            "intermediate_target_10.obj",
-            "intermediate_target_30.obj"
-        ],
-        "opt_mesh_idx": 0,
-        "threads": 32
-    },
-    "gripper_bellows_shape_inside": {
-        "base_path": "gripper_bellows",
-        "state_path": "state_gripper_bellows.json",
-        "run_path": "run_gripper_bellows_shape_inside.json",
-        "num_control_points": {
-            "0": [5, 20, 80, 320, 640, 1280, 1280, 1280],
-        },
-        "num_iters": [5, 5, 5, 5, 5, 10, 20, 20],
-        "aux_files": [
-            "cylinder_smaller_target_v2.obj",
-            "intermediate_target_5.obj",
-            "intermediate_target_10.obj",
-            "intermediate_target_30.obj"
-        ],
-        "opt_mesh_idx": 0,
-        "threads": 32
-    },
-    "worm": {
-        "base_path":  "worm",
-        "state_path": "state_worm.json",
-        "run_path": "run_worm.json",
-        "num_control_points": {
-            "0": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "1": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "2": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "3": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "4": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "5": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "6": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "7": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "8": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "9": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "10": [10, 60, 120, 240, 480, 960, 1280, 1280, 1280]
-        },
-        "num_iters": [3, 5, 5, 5, 5, 10, 10, 10, 10],
-        "aux_files": [],
-        "opt_mesh_idx": 0,
-        "threads": 32
-    },
-    "worm_control": {
-        "base_path":  "worm_control",
-        "state_path": "state_worm.json",
-        "run_path": "run_worm.json",
-        "num_control_points": {
-            "0": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "1": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "2": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "3": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "4": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "5": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "6": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "7": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "8": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "9": [1, 6, 12, 24, 48, -1, -1, -1, -1],
-            "10": [10, 60, 120, 240, 480, 960, 1280, 1280, 1280]
-        },
-        "num_iters": [3, 5, 5, 5, 5, 10, 10, 10, 10],
-        "control_variables": 10,
-        "aux_files": [],
-        "opt_mesh_idx": 0,
-        "threads": 16
-    },
-    "cervix_inflation": {
-        "base_path": "cervix_inflation",
-        "state_path": "state_MR_Conradlow.json",
-        "run_path": "run_MR_Conradlow.json",
-        "num_control_points": {
-            "0": [6, 12, 24, 48, 96]
-        },
-        "num_iters": [10, 10, 10, 10, 10],
-        "aux_files": ["LORIP45V4_ut_cx_1_scaled.obj"],
-        "opt_mesh_idx": 0,
-        "threads": 16
-    },
-    "cervix_inflation_EX_V2_thick_new": {
-        "base_path": "cervix_inflation_EX_V2_thick_new",
-        "state_path": "state_MR_Conradlow.json",
-        "run_path": "run_MR_Conradlow.json",
-        "num_control_points": {
-            "0": [6, 12, 24, 48, 96, 192, 384, 768, 1536]
-        },
-        "num_iters": [5, 5, 5, 10, 10, 10, 10, 10, 10],
-        "aux_files": ["LORIP45V3_UTCX_out_scaled.obj", "LORIP45V2_CX_Thick.stl"],
-        "opt_mesh_idx": 0,
-        "remesh_reload_function": lambda fname: make_selections.make_selections(fname, "LORIP45V2_CX_Thick.stl"),
-        "threads": 16
-    }
+OPTIMIZATION_NAMES = [
+    "finger",
+    "frog_quasistatic",
+    "frog_quasistatic_base",
+    "frog_quasistatic_base_weights_adjust",
+    "gripper_bellows",
+    "gripper_bellows_quadratic_inside",
+    "gripper_bellows_shape_inside",
+    "worm",
+    "worm_control",
+    "cervix_inflation",
+    "cervix_inflation_EX_V2_thick_new"
+]
 
+REMESH_RELOAD_FUNCTIONS = {
+    "cervix_inflation_EX_V2_thick_new": lambda fname: cervix_inflation_functions.make_selections(fname, "LORIP45V2_CX_Thick.stl")
 }
 
 
@@ -439,8 +283,7 @@ def do_tetwild_remesh(remesh_reload_function, ftetwild_build_dir, base_path):
     return new_opt_vertex_count
 
 
-def main():
-    opt_example_dict = OPTIMIZATIONS[args.opt_example]
+def main(opt_example_dict):
     opt_path = args.opt_path
     base_path = opt_example_dict["base_path"]
 
@@ -566,30 +409,35 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    ######################## REQUIRED ########################
     parser.add_argument("--opt_example",
                         type=str,
-                        choices=list(OPTIMIZATIONS.keys()),
+                        choices=OPTIMIZATION_NAMES,
                         required=True,
                         help="")
     parser.add_argument("--polyfem_build_dir",
                         type=str,
+                        required=True,
                         help="Path to PolyFEM binary.")
     parser.add_argument("--mmg_build_dir",
                         type=str,
+                        required=True,
                         help="Path to MMG 3D binary.")
+    ######################## NOT REQUIRED / SPECIAL CASES ########################
     parser.add_argument("--ftetwild_build_dir",
                         type=str,
-                        help="Path to fTetWild binary.")
+                        required=False,
+                        help="Path to fTetWild binary. Only needed if total body remeshing is done, by specifying a boundary selection reload function in REMESH_RELOAD_FUNCTIONS.")
     parser.add_argument("--absolute_path",
                         type=str,
                         required=False,
                         default=os.path.dirname(os.path.realpath(__file__)),
-                        help="What is the base path of the data directory, should end in 'pneumatic-actuator-design'")
+                        help="What is the base path of the data directory, should end in 'pneumatic-actuator-design'. This should really only be changed for special cases (HPC, etc).")
     parser.add_argument("--opt_path",
                         type=str,
                         default=os.getcwd(),
                         required=False,
-                        help="Where do you want the optimization files to be saved to?")
+                        help="Where do you want the optimization files to be saved to? The default is the CWD.")
     parser.add_argument("--opt_algorithm",
                         type=str,
                         help="Which optimization algorithm to run?",
@@ -603,9 +451,13 @@ if __name__ == "__main__":
                         default="L-BFGS")
     args = parser.parse_args()
 
-    absolute_path = args.absolute_path
+    with open(os.path.join(args.absolute_path, "configs", args.opt_example), "r") as f:
+        opt_config = json.load(f)
 
-    for k, v in OPTIMIZATIONS.items():
-        v["base_path"] = os.path.join(absolute_path, v["base_path"])
+    opt_config["base_path"] = os.path.join(
+        args.absolute_path, opt_config["base_path"])
 
-    main()
+    if args.opt_example in REMESH_RELOAD_FUNCTIONS:
+        opt_config["remesh_reload_function"] = REMESH_RELOAD_FUNCTIONS[args.opt_example]
+
+    main(opt_config)

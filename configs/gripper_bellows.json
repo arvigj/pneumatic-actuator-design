@@ -1,0 +1,35 @@
+{
+    "base_path": "gripper_bellows",
+    "state_path": "state_gripper_bellows.json",
+    "run_path": "run_gripper_bellows_log_inside.json",
+    "num_control_points": {
+        "0": [
+            5,
+            20,
+            80,
+            320,
+            640,
+            1280,
+            1280,
+            1280
+        ]
+    },
+    "num_iters": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        10,
+        20,
+        20
+    ],
+    "aux_files": [
+        "cylinder_smaller_target_v2.obj",
+        "intermediate_target_5.obj",
+        "intermediate_target_10.obj",
+        "intermediate_target_30.obj"
+    ],
+    "opt_mesh_idx": 0,
+    "threads": 32
+}

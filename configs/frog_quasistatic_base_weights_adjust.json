@@ -1,0 +1,59 @@
+{
+    "base_path": "frog",
+    "state_path": "state_frog_quasistatic_vertices.json",
+    "run_path": "run_frog_quasistatic_vertices.json",
+    "num_control_points": {
+        "0": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+        ]
+    },
+    "num_iters": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+    ],
+    "weights_adjust": {
+        "boundary_smoothing": [
+            2.8,
+            2.8,
+            2.8,
+            2.8,
+            1.4,
+            1.4,
+            1.4,
+            1.4,
+            0.7,
+            0.7,
+            0.7,
+            0.7
+        ]
+    },
+    "aux_files": [
+        "frog_selection_10.obj",
+        "frog_selection_11.obj",
+        "frog_selection_12.obj",
+        "frog_neck_target.obj"
+    ],
+    "opt_mesh_idx": 0,
+    "threads": 16
+}
