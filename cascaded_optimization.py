@@ -458,7 +458,6 @@ if __name__ == "__main__":
         with open(args.opt_json, "r") as f:
             opt_config = json.load(f)
         opt_config["base_path"] = absolute_path
-        print(opt_config)
     else:
         raise AssertionError()
 
