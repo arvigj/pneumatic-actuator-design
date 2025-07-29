@@ -9,6 +9,7 @@ import numpy.linalg as la
 import argparse
 import re
 import platform
+import shutil
 
 import cervix_inflation_EX_V2_thick_new.make_selections as cervix_inflation_functions
 
@@ -20,28 +21,43 @@ REMESH_RELOAD_FUNCTIONS = {
     "cervix_inflation_EX_V2_thick_new": lambda fname: cervix_inflation_functions.make_selections(fname, "LORIP45V2_CX_Thick.stl")
 }
 
+if platform.system() == "Darwin":
+    POLYFEM_BIN = "PolyFEM_bin"
+    MMG_BIN = "mmg3d_O3"
+    LINEAR_SOLVER = "Eigen::AccelerateLDLT"
+elif platform.system() == "Linux":
+    POLYFEM_BIN = "PolyFEM_bin"
+    MMG_BIN = "mmg3d_O3"
+    LINEAR_SOLVER = "Eigen::PardisoLDLT"
+elif platform.system() == "Windows":
+    POLYFEM_BIN = "PolyFEM_bin.exe"
+    MMG_BIN = "mmg3d.exe"
+    LINEAR_SOLVER = "Eigen::PardisoLDLT"
+else:
+    raise AssertionError(
+        f"{platform.system()} is currently not supported.")
 
-def slim_smoothing(v, t, max_iter=50):
-    soft_p = 1e5
-    boundary_vertices = np.unique(igl.boundary_facets(t).flatten())
+# def slim_smoothing(v, t, max_iter=50):
+#     soft_p = 1e5
+#     boundary_vertices = np.unique(igl.boundary_facets(t)[0].flatten())
 
-    def is_good_enough(new_v, tol=1e-12):
-        return la.norm(v[boundary_vertices, :] - new_v[boundary_vertices, :]) < tol
-    # boundary_constraints = np.zeros([boundary_vertices.size, 3])
-    boundary_constraints = v[boundary_vertices, :]
-    s = igl.SLIM(v.copy(), t, v.copy(), boundary_vertices,
-                 boundary_constraints, igl.SLIM_ENERGY_TYPE_SYMMETRIC_DIRICHLET, soft_p)
+#     def is_good_enough(new_v, tol=1e-12):
+#         return la.norm(v[boundary_vertices, :] - new_v[boundary_vertices, :]) < tol
+#     # boundary_constraints = np.zeros([boundary_vertices.size, 3])
+#     boundary_constraints = v[boundary_vertices, :]
+#     s = igl.SLIM(v.copy(), t, v.copy(), boundary_vertices,
+#                  boundary_constraints, igl.SLIM_ENERGY_TYPE_SYMMETRIC_DIRICHLET, soft_p)
 
-    it = 0
-    while True:
-        s.solve(5)
-        if is_good_enough(s.vertices()):
-            break
-        if it > 50:
-            raise AssertionError("SLIM exceeded max iterations!")
-        it += 1
+#     it = 0
+#     while True:
+#         s.solve(5)
+#         if is_good_enough(s.vertices()):
+#             break
+#         if it > 50:
+#             raise AssertionError("SLIM exceeded max iterations!")
+#         it += 1
 
-    return s.vertices()
+#     return s.vertices()
 
 
 def interior_remeshing(v, t, base_path):
@@ -49,7 +65,7 @@ def interior_remeshing(v, t, base_path):
                               "tetra": t}, file_format="gmsh22")
 
     remesh_args = [
-        os.path.join(args.mmg_build_dir, "mmg3d_O3"),
+        os.path.join(args.mmg_build_dir, MMG_BIN),
         "-nosurf", "-optim",
         "-in", os.path.join(base_path, "before_remesh.msh"),
         "-out", os.path.join(base_path, "after_remesh.msh")]
@@ -99,7 +115,6 @@ def load_from_vtu(base_path, vol_vtu_path, surf_vtu_path, volume_selection, inte
         v, t, 1e-8)
     t = svj[t]
     v, t, _, _ = igl.remove_unreferenced(v, t)
-    f = igl.boundary_facets(t)
 
     surf_v = surf_mm.points
     surf_f = surf_mm.cells_dict["triangle"]
@@ -110,7 +125,7 @@ def load_from_vtu(base_path, vol_vtu_path, surf_vtu_path, volume_selection, inte
     if interior_remesh:
         v, t = interior_remeshing(v, t, base_path)
 
-    boundary_indices = np.unique(igl.boundary_facets(t).flatten())
+    boundary_indices = np.unique(igl.boundary_facets(t)[0].flatten())
 
     meshio.write_points_cells(os.path.join(base_path, "multigrid.msh"), v, {
                               "tetra": t}, file_format="gmsh")
@@ -145,9 +160,9 @@ def load_from_vtu(base_path, vol_vtu_path, surf_vtu_path, volume_selection, inte
 
 def log_energy(base_path):
     with open(os.path.join(base_path, "total_energy"), "w") as file_:
-        subprocess.run(["cat", os.path.join(
-            base_path, "energy")], stdout=file_)
-        file_.write("\n\n")
+        with open(os.path.join(base_path, "energy"), "r") as read_file:
+            file_.write(read_file.read())
+        file_.write("\n")
 
 
 def cache_opt_files(base_path, num_control_pts, num_iters, multigrid_level):
@@ -155,12 +170,15 @@ def cache_opt_files(base_path, num_control_pts, num_iters, multigrid_level):
     for i in range(0, num_iters+1):
         try:
             for postfix in [".vtu", "_surf.vtu", ".vtm"]:
-                subprocess.run(["mv", os.path.join(base_path, f"opt_state_0_iter_{i}{postfix}"), os.path.join(
-                    base_path, f"opt_{multigrid_level}_{i}_{num_control_pts if (num_control_pts > 0) else 'full'}{postfix}")], check=True)
-            for postfix in ["_surf_contact.vtu"]:
-                subprocess.run(["mv", os.path.join(base_path, f"opt_state_0_iter_{i}{postfix}"), os.path.join(
-                    base_path, f"opt_{multigrid_level}_{i}_{num_control_pts if (num_control_pts > 0) else 'full'}{postfix}")], check=False)
-        except subprocess.CalledProcessError:
+                shutil.move(os.path.join(base_path, f"opt_state_0_iter_{i}{postfix}"), os.path.join(
+                    base_path, f"opt_{multigrid_level}_{i}_{num_control_pts if (num_control_pts > 0) else 'full'}{postfix}"))
+            try:
+                for postfix in ["_surf_contact.vtu"]:
+                    shutil.move(os.path.join(base_path, f"opt_state_0_iter_{i}{postfix}"), os.path.join(
+                        base_path, f"opt_{multigrid_level}_{i}_{num_control_pts if (num_control_pts > 0) else 'full'}{postfix}"))
+            except FileNotFoundError:
+                pass # Simulation does not have contact
+        except FileNotFoundError:
             # continue
             # break
             raise AssertionError("Multigrid level did not finish!")
@@ -231,7 +249,7 @@ def run_optimization_or_reload(
         json.dump(tmp_run, file_, indent=2)
     with open(os.path.join(opt_path, "log"), "a") as file_:
         polyfem_args = [
-            os.path.join(args.polyfem_build_dir, "PolyFEM_bin"),
+            os.path.join(args.polyfem_build_dir, POLYFEM_BIN),
             "--json", os.path.join(opt_path, "run.json"),
             "--log_level", "trace", "--ns"]
         if num_threads > 0:
@@ -242,8 +260,10 @@ def run_optimization_or_reload(
         subprocess.run(polyfem_args, stdout=file_)
         print("---")
     with open(os.path.join(opt_path, "energy"), "w") as energy_file:
-        subprocess.run(["grep", "-e", args.opt_algorithm, "-e", '"Reached iteration limit"',
-                       os.path.join(opt_path, "log")], stdout=energy_file)
+        with open(os.path.join(opt_path, "log"), "r") as log_file:
+            for line in log_file:
+                if re.search(args.opt_algorithm, line) or re.search("Reached iteration limit", line):
+                    energy_file.write(line)
 
     # log_energy(opt_path)
     return cache_opt_files(opt_path, list(num_control_pts.values())[0], num_iters, multigrid_level)
@@ -259,7 +279,7 @@ def do_tetwild_remesh(remesh_reload_function, ftetwild_build_dir, base_path):
     mm = meshio.read(mesh_fname)
     v = mm.points
     t = mm.cells_dict["tetra"]
-    f = igl.boundary_facets(t)
+    f = igl.boundary_facets(t)[0]
     meshio.write_points_cells(surf_mesh_fname, v, {"triangle": f})
     if ftetwild_build_dir is None or ftetwild_build_dir == "":
         raise AssertionError(
@@ -300,14 +320,7 @@ def main(opt_example_dict):
     run["output"]["save_frequency"] = 1
     # run["output"]["solve_log_level"] = 1
 
-    if platform.system() == "Darwin":
-        state["solver"]["linear"]["solver"] = "Eigen::AccelerateLDLT"
-    elif platform.system() in ["Linux", "Windows"]:
-        state["solver"]["linear"]["solver"] = "Eigen::PardisoLDLT"
-    else:
-        print(platform.system())
-        raise AssertionError(
-            f"{platform.system()} is currently not supported.")
+    state["solver"]["linear"]["solver"] = LINEAR_SOLVER
     # state["solver"]["nonlinear"]["solver"] = [{"type": "Newton"}, {"type": "RegularizedNewton"}, {"type": "GradientDescent"}]
     state["solver"]["nonlinear"]["line_search"] = {"method": "RobustArmijo"}
     # state["solver"]["nonlinear"]["Newton"] = {"use_psd_projection": False, "use_psd_projection_in_regularized": False}
@@ -323,8 +336,7 @@ def main(opt_example_dict):
     #                stderr=subprocess.DEVNULL)
 
     for fname in opt_example_dict["aux_files"]:
-        subprocess.run(
-            ["cp", os.path.join(base_path, fname), os.path.join(opt_path, fname)])
+        shutil.copyfile(os.path.join(base_path, fname), os.path.join(opt_path, fname))
 
     num_control_pts = opt_example_dict["num_control_points"]
 
@@ -341,11 +353,9 @@ def main(opt_example_dict):
             state["geometry"][idx]["mesh"] = dst_mesh
             if (type(state["geometry"][idx]["surface_selection"]) == str):
                 state["geometry"][idx]["surface_selection"] = dst_selection
-        subprocess.run(
-            ["cp", os.path.join(base_path, orig_mesh), os.path.join(opt_path, dst_mesh)])
+        shutil.copyfile(os.path.join(base_path, orig_mesh), os.path.join(opt_path, dst_mesh))
         if type(state["geometry"][idx]["surface_selection"]) == str:
-            subprocess.run(["cp", os.path.join(
-                base_path, orig_selection), os.path.join(opt_path, dst_selection)])
+            shutil.copyfile(os.path.join(base_path, orig_selection), os.path.join(opt_path, dst_selection))
 
     num_iters = get_num_iters(opt_example_dict["num_iters"], 0)
     num_threads = opt_example_dict["threads"]
