@@ -2,7 +2,7 @@ import numpy as np
 import igl
 import meshio
 import subprocess
-import os
+import os, sys
 import pathlib
 import json
 import numpy.linalg as la
@@ -10,6 +10,17 @@ import argparse
 import re
 import platform
 import shutil
+
+# Check if the script is running as a PyInstaller bundle
+# igl throws error if pyNastran is not imported when using PyInstaller
+# Needs a longer term fix for igl, but this is a niche use case
+# This snippet was generated from Gemini 
+if getattr(sys, 'frozen', False):
+    # This code block executes only when running as a PyInstaller executable
+    import pyNastran
+    from pyNastran.bdf.bdf import BDF
+    print("✅ Running as a PyInstaller executable. pyNastran package imported.")
+
 
 import cervix_inflation_EX_V2_thick_new.make_selections as cervix_inflation_functions
 
