@@ -1,52 +1,35 @@
 import numpy as np
-import igl
-import meshio
-import subprocess
-import os
-import json
-import numpy.linalg as la
+import os, sys
 import argparse
+import shutil
+import re
 
-import cascaded_optimization
+def list_sorted_files(path, suffix):
+    files = [fname for fname in os.listdir(path) if re.match(f"opt_[0-9]+_[0-9]+_[0-9]+{suffix}", fname)]
+    files.extend([fname for fname in os.listdir(path) if re.match(f"opt_state_[0-9]+_iter_[0-9]+{suffix}", fname)])
+    sorted_files = sorted([fname for fname in files if ("opt_" in fname)])
 
+    return sorted_files
 
-def main(example_dict, path):
-    s = 0
-    for idx, i in enumerate(example_dict["num_control_points"][list(example_dict["num_control_points"])[0]]):
-        if i == -1:
-            i = "full"
-        for j in range(example_dict["num_iters"][idx]):
-            try:
-                for suffix in [".vtu", "_surf.vtu"]:
-                    subprocess.run(["cp", os.path.join(path, f"opt_{idx}_{j}_{i}{suffix}"), os.path.join(
-                        path, f"opt_sequential_{s}{suffix}")], check=True)
-                for suffix in ["_surf_contact.vtu"]:
-                    subprocess.run(["cp", os.path.join(path, f"opt_{idx}_{j}_{i}{suffix}"), os.path.join(
-                        path, f"opt_sequential_{s}{suffix}")], check=False)
-                s += 1
-            except Exception as e:
-                print(e)
-                pass
-    i = 0
-    while True:
+def copy_files_ordered(path, suffix):
+    sorted_files = list_sorted_files(path, suffix)
+    for idx, fname in enumerate(sorted_files):
+        shutil.copyfile(fname, os.path.join(path, f"opt_sequential_{idx}{suffix}"))
+
+def copy_output_to_ordered(path):
+    for suffix in [".vtu", "_surf.vtu"]:
+        copy_files_ordered(path, suffix)
+    
+    for suffix in ["_surf_contact.vtu"]:
         try:
-            for suffix in [".vtu", "_surf.vtu"]:
-                subprocess.run(["cp", os.path.join(path, f"opt_state_0_iter_{i}{suffix}"), os.path.join(
-                    path, f"opt_sequential_{s}{suffix}")], check=True)
-            for suffix in ["_surf_contact.vtu"]:
-                subprocess.run(["cp", os.path.join(path, f"opt_state_0_iter_{i}{suffix}"), os.path.join(
-                    path, f"opt_sequential_{s}{suffix}")], check=False)
-            i += 1
-            s += 1
-        except Exception as e:
-            break
+            copy_files_ordered(path, suffix)
+        except:
+            pass
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--opt_example", help="", type=str,
-                        choices=list(cascaded_optimization.OPTIMIZATIONS.keys()))
     parser.add_argument("--opt_path", default=os.getcwd(), help="", type=str)
     args = parser.parse_args()
 
-    main(cascaded_optimization.OPTIMIZATIONS[args.opt_example], args.opt_path)
+    copy_output_to_ordered(args.opt_path)

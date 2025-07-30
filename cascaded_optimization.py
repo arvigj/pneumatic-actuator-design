@@ -11,6 +11,8 @@ import re
 import platform
 import shutil
 
+from copy_output_sequential import copy_output_to_ordered
+
 # Check if the script is running as a PyInstaller bundle
 # igl throws error if pyNastran is not imported when using PyInstaller
 # Needs a longer term fix for igl, but this is a niche use case
@@ -486,3 +488,4 @@ if __name__ == "__main__":
         opt_config["remesh_reload_function"] = REMESH_RELOAD_FUNCTIONS[args.opt_example]
 
     main(opt_config)
+    copy_output_to_ordered(args.opt_path)
