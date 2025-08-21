@@ -1,0 +1,101 @@
+{
+    "geometry": [
+        {
+            "mesh": "LORIP45V2_UTCX_Thick.msh",
+            "volume_selection": 2,
+            "transformation": {
+                "scale": 0.001
+            },
+            "n_refs": 0,
+            "surface_selection": "surface_selections.txt"
+        }
+    ],
+    "contact": {
+        "enabled": false,
+        "friction_coefficient": 0.0
+    },
+    "space": {
+        "discr_order": 2
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::AccelerateLDLT"
+        },
+        "nonlinear": {
+            "line_search": {
+                "use_grad_norm_tol": 1e-4,
+                "method": "RobustArmijo"
+            },
+            "grad_norm": 1e-5
+        }
+    },
+    "time": {
+        "t0": 0,
+        "tend": 4,
+        "time_steps": 40,
+        "quasistatic": false
+    },
+    "boundary_conditions": {
+        "dirichlet_boundary": [
+            {
+                "id": 1,
+                "value": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ],
+        "pressure_boundary": [
+            {
+                "id": 2,
+                "value": "-1000 * (t/4)"
+            }
+        ]
+    },
+    "materials": [
+        {
+            "id": 5,
+            "type": "MooneyRivlin3Param",
+            "c1": 178571.43,
+            "c2": 89285.71,
+            "c3": 44642.86,
+            "d1": 1.19e-06,
+            "rho": 1000
+        },
+        {
+            "id": 2,
+            "type": "MooneyRivlin3Param",
+            "c1": 1.389e+02,
+            "c2": 3.423e+02,
+            "c3": 4.912e+03,
+            "d1": 1e+05,
+            "rho": 1000
+        },
+        {
+            "id": 1,
+            "type": "MooneyRivlin3Param",
+            "c1": 1.389e+02,
+            "c2": 3.423e+02,
+            "c3": 4.912e+03,
+            "d1": 1e+05,
+            "rho": 1000
+        }
+    ],
+    "output": {
+        "log": {
+            "level": "debug"
+        },
+        "paraview": {
+            "vismesh_rel_area": 1,
+            "surface": true,
+            "options": {
+                "body_ids": true
+            },
+            "skip_frame": 10
+        },
+        "advanced": {
+            "save_time_sequence": true
+        }
+    }
+}

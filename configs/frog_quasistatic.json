@@ -1,0 +1,43 @@
+{
+    "base_path": "frog",
+    "state_path": "state_frog_quasistatic.json",
+    "run_path": "run_frog_quasistatic.json",
+    "num_control_points": {
+        "0": [
+            1,
+            10,
+            20,
+            40,
+            80,
+            160,
+            320,
+            640,
+            728,
+            728,
+            728,
+            728
+        ]
+    },
+    "num_iters": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+    ],
+    "aux_files": [
+        "frog_selection_10.obj",
+        "frog_selection_11.obj",
+        "frog_selection_12.obj",
+        "frog_neck_target.obj"
+    ],
+    "opt_mesh_idx": 0,
+    "threads": 16
+}
